@@ -59,7 +59,7 @@ public class ExamenServiceTest {
 	
 	
 	@Test
-	@DisplayName("Cantidad de preguntas")
+	@DisplayName("preguntas Examen")
 	void testSizePreguntasByExamen() {
 		when(repo.findAll()).thenReturn(Datos.EXAMENES);
 		when(preguntaRepo.getPreguntasByExamenId(2L)).thenReturn(Datos.PREGUNTAS_HISTORIA);
@@ -67,6 +67,8 @@ public class ExamenServiceTest {
 		Examen examen = service.findExamenByNameWithQuestions("Historia");
 		Assertions.assertNotNull(examen);
 		Assertions.assertEquals(6, examen.getQuestions().size());
+		verify(repo).findAll();
+		verify(preguntaRepo).getPreguntasByExamenId(2L);
 	}
 
 }
