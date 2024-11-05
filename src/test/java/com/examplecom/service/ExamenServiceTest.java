@@ -70,5 +70,21 @@ public class ExamenServiceTest {
 		verify(repo).findAll();
 		verify(preguntaRepo).getPreguntasByExamenId(2L);
 	}
+	
+	@Test
+	void testQuestionsZero() {
+		Examen examen = new Examen();
+		Assertions.assertNotNull(examen);
+		Assertions.assertEquals(0, examen.getQuestions().size());
+		
+		examen.setId(1L);
+		examen.setName("Física");
+		examen.addQuestion("Como construir una maquina del tiempo?");
+		
+		Assertions.assertEquals(1L, examen.getId());
+		Assertions.assertEquals("Física", examen.getName());
+		Assertions.assertEquals(1, examen.getQuestions().size());
+		
+	}
 
 }
