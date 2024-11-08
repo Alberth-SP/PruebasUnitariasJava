@@ -11,5 +11,7 @@ public interface ExamenService {
 	List<Examen> findAll();
 	
 	Examen findExamenByNameWithQuestions(String name);
+	
+	Examen save(Examen examen);
 
 }

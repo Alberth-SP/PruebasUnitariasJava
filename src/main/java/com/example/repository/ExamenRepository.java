@@ -7,5 +7,8 @@ import com.example.model.Examen;
 public interface ExamenRepository {
 	
 	List<Examen> findAll();
+	
+	
+	Examen save(Examen examen);
 
 }

@@ -2,6 +2,8 @@ package com.examplecom.service;
 
 import static org.mockito.Mockito.*;
 
+
+
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -10,23 +12,35 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.example.model.Examen;
 import com.example.repository.ExamenRepository;
 import com.example.repository.PreguntaRepository;
 import com.example.service.*;
+
+//@ExtendWith(MockitoExtension.class) // con esta anotacion no hace falta la linea en setUP
 public class ExamenServiceTest {
 	
+	@Mock
 	ExamenRepository repo;
+	@Mock
 	PreguntaRepository preguntaRepo;
-	ExamenService service;
+	@InjectMocks
+	ExamenServiceImpl service;
 	
 	@BeforeEach
 	void setUp() {
-		this.repo = Mockito.mock(ExamenRepository.class);
-		this.preguntaRepo = Mockito.mock(PreguntaRepository.class);
-		this.service = new ExamenServiceImpl(this.repo, this.preguntaRepo);		
+		MockitoAnnotations.openMocks(this); // adicional a la injeccion de dependencias de mock
+		/* instanciamos los mock q usaremos manualmente */
+//		this.repo = Mockito.mock(ExamenRepository.class);
+//		this.preguntaRepo = Mockito.mock(PreguntaRepository.class);
+//		this.service = new ExamenServiceImpl(this.repo, this.preguntaRepo);		
 	}
 	
 	
@@ -85,6 +99,36 @@ public class ExamenServiceTest {
 		Assertions.assertEquals("Física", examen.getName());
 		Assertions.assertEquals(1, examen.getQuestions().size());
 		
+	}
+	
+	@Test
+	void testSaveExamen() {
+		Examen newExam = Datos.EXAMEN;
+		newExam.setQuestions(Arrays.asList("Qué es arquitectura", "Que es el Arte?"));
+		when(repo.save(any(Examen.class))).thenReturn(Datos.EXAMEN);
+		Examen exam = service.save(Datos.EXAMEN);
+		
+		Assertions.assertNotNull(exam.getId());
+		Assertions.assertEquals(6L, exam.getId());
+		Assertions.assertEquals("Arte", exam.getName());
+		
+		verify(preguntaRepo).savePreguntas(anyList());
+		verify(repo).save(any(Examen.class));
+	}
+	
+	@Test
+	void testFindExamenThrows() {
+		when(repo.findAll()).thenReturn(Datos.EXAMENES);
+		when(preguntaRepo.getPreguntasByExamenId(anyLong())).thenThrow(IllegalArgumentException.class);
+		
+		Assertions.assertThrows(IllegalArgumentException.class, () -> {
+			service.findExamenByNameWithQuestions("Arte");
+		});
+		//otra forma
+		Exception ex = Assertions.assertThrows(IllegalArgumentException.class, () -> {
+			service.findExamenByNameWithQuestions("Arte");
+		});
+		Assertions.assertEquals(IllegalArgumentException.class, ex.getClass());
 	}
 
 }

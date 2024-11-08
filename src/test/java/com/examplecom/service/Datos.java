@@ -21,5 +21,7 @@ public class Datos {
 			"Pregunta 4",
 			"Pregunta 5",
 			"Pregunta 6");
+	
+	public final static Examen EXAMEN = new Examen(6L, "Arte");
 
 }

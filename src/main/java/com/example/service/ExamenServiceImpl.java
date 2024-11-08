@@ -48,4 +48,13 @@ public class ExamenServiceImpl implements  ExamenService {
 		return examen;
 	}
 
+	@Override
+	public Examen save(Examen examen) {
+		// TODO Auto-generated method stub
+		if(!examen.getQuestions().isEmpty()) {
+			preguntaRepo.savePreguntas(examen.getQuestions());
+		}
+		return this.repo.save(examen);
+	}
+
 }
