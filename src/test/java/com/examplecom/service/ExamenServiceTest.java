@@ -13,6 +13,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InOrder;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -163,6 +164,26 @@ public class ExamenServiceTest {
 		Assertions.assertEquals(6, exam.getQuestions().size());
 		Assertions.assertEquals("Arte", exam.getName());
 		
+	}
+	
+	
+	@Test
+	void testOrderCallMock() {
+		// asegurando el orden de llamada de los mocks
+		when(repo.findAll()).thenReturn(Datos.EXAMENES);
+		service.findExamenByNameWithQuestions("Arte");
+		service.findExamenByNameWithQuestions("Lenguaje");
+		
+		InOrder objInOrder = inOrder(repo, preguntaRepo);
+		
+		objInOrder.verify(repo).findAll();
+		objInOrder.verify(preguntaRepo).getPreguntasByExamenId(6L);
+		objInOrder.verify(repo).findAll();
+		objInOrder.verify(preguntaRepo).getPreguntasByExamenId(3L);
+		
+		// asegurando el numero de veces que se llama un mock
+		verify(repo, times(2)).findAll();
+		verify(preguntaRepo, times(2)).getPreguntasByExamenId(anyLong());
 	}
 
 }
