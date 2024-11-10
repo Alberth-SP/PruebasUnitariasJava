@@ -50,8 +50,10 @@ public class ExamenServiceImpl implements  ExamenService {
 
 	@Override
 	public Examen save(Examen examen) {
+		
 		// TODO Auto-generated method stub
 		if(!examen.getQuestions().isEmpty()) {
+			System.out.print(">>>TIENE PEGUNTAS");
 			preguntaRepo.savePreguntas(examen.getQuestions());
 		}
 		return this.repo.save(examen);

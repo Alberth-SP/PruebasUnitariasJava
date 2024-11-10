@@ -130,5 +130,39 @@ public class ExamenServiceTest {
 		});
 		Assertions.assertEquals(IllegalArgumentException.class, ex.getClass());
 	}
+	
+	
+	@Test
+	void testWithMethodVoid() {
+		// util para cuando se quiere mocker un metodo q no devuelve nada
+		
+		Examen exam = Datos.EXAMEN;
+		exam.setQuestions(Datos.PREGUNTAS_HISTORIA);
+		
+		doThrow(IllegalArgumentException.class).when(preguntaRepo).savePreguntas(anyList());
+		exam.getQuestions().forEach(System.out::println);
+		Assertions.assertThrows(IllegalArgumentException.class, () -> {
+			service.save(exam);
+		});
+				
+	}
+	
+	@Test
+	void testDoAnswer() {
+		when(repo.findAll()).thenReturn(Datos.EXAMENES);
+		
+		doAnswer(invocation -> {
+			Long id = invocation.getArgument(0);
+			return id == 6L ? Datos.PREGUNTAS_HISTORIA : Collections.emptyList();
+			
+		}).when(preguntaRepo).getPreguntasByExamenId(anyLong());
+		
+		Examen exam = service.findExamenByNameWithQuestions("Arte");
+		
+		Assertions.assertEquals(6L, exam.getId());
+		Assertions.assertEquals(6, exam.getQuestions().size());
+		Assertions.assertEquals("Arte", exam.getName());
+		
+	}
 
 }
